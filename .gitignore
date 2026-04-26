@@ -1,0 +1,4 @@
+*.sqlite
+.vscode/
+*.db
+__pycache__/
