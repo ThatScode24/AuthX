@@ -1,7 +1,7 @@
 import sqlite3
-import os 
+import os
 
-path_migrare = "migrari.sql"
+path_migrare = os.path.join(os.path.dirname(os.path.abspath(__file__)), "migrari.sql")
 
 
 

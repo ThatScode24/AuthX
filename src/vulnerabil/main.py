@@ -1,5 +1,8 @@
+from pathlib import Path
 from fastapi import FastAPI, Request, HTTPException, Depends
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from jose import jwt, JWTError
 
 from src.vulnerabil.routes_util import router as auth_router
@@ -13,7 +16,23 @@ alg = "HS256"
 
 app = FastAPI(title="API vulnerabil", version="1.0vulnerabil")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(auth_router)
+
+FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
+
+@app.get("/")
+def index():
+    return FileResponse(FRONTEND_DIR / "index.html")
+
+app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
 
 @app.on_event("startup")
 def start():
@@ -47,7 +66,7 @@ def create_ticket(user=Depends(get_current_user)):
 def create_ticket(body: NewTicket, user=Depends(get_current_user)):  # nu sanitizam description
     conn = get_connection("data.db")
     conn.execute(
-        """INSERT INTO tickets (title, description, severity, owner_id)
+        """INSERT INTO tickets (title, description, severity, created_by)
            VALUES (?, ?, ?, ?)""",
         (body.title, body.description, body.severity, user["sub"])
     )
@@ -58,7 +77,7 @@ def create_ticket(body: NewTicket, user=Depends(get_current_user)):  # nu saniti
 
 @app.get("/tickets/{ticket_id}")
 def get_ticket(ticket_id):
-    conn = get_connection()
+    conn = get_connection("data.db")
 
     ticket = conn.execute(
         "SELECT * FROM tickets WHERE id = ?", (ticket_id,)

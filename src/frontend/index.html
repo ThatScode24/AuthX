@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vulnerabil</title>
+  <link rel="stylesheet" href="/static/css/styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Sistem tichete (vulnerabil)</h1>
+    <div class="me">
+      <span id="userInfo" class="hidden"></span>
+      <button id="logoutBtn" class="ghost hidden" style="margin-left:10px">Logout</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="authCard" class="card">
+      <div class="tabs">
+        <div class="tab active" data-tab="login">Login</div>
+        <div class="tab" data-tab="register">Register</div>
+        <div class="tab" data-tab="forgot">Forgot</div>
+        <div class="tab" data-tab="reset">Reset</div>
+      </div>
+
+      <div class="pane active" id="pane-login">
+        <div class="field">
+          <label>Email</label>
+          <input id="loginEmail" type="email" autocomplete="username" />
+        </div>
+        <div class="field">
+          <label>Parola</label>
+          <input id="loginPassword" type="password" autocomplete="current-password" />
+        </div>
+        <button id="loginBtn">Login</button>
+        <div id="loginMsg" class="msg hidden"></div>
+      </div>
+
+      <div class="pane" id="pane-register">
+        <div class="field">
+          <label>Email</label>
+          <input id="regEmail" type="email" />
+        </div>
+        <div class="field">
+          <label>Parola</label>
+          <input id="regPassword" type="password" />
+        </div>
+        <button id="regBtn">Inregistreaza</button>
+        <div id="regMsg" class="msg hidden"></div>
+      </div>
+
+      <div class="pane" id="pane-forgot">
+        <div class="field">
+          <label>Email</label>
+          <input id="forgotEmail" type="email" />
+        </div>
+        <button id="forgotBtn">Trimite cerere reset</button>
+        <div id="forgotMsg" class="msg hidden"></div>
+      </div>
+
+      <div class="pane" id="pane-reset">
+        <div class="field">
+          <label>Token reset</label>
+          <input id="resetToken" type="text" />
+        </div>
+        <div class="field">
+          <label>Parola noua</label>
+          <input id="resetPassword" type="password" />
+        </div>
+        <button id="resetBtn">Reseteaza parola</button>
+        <div id="resetMsg" class="msg hidden"></div>
+      </div>
+    </section>
+
+    <section id="ticketsCard" class="card hidden">
+      <h2>Creeaza tichet</h2>
+      <div class="row">
+        <div class="field">
+          <label>Titlu</label>
+          <input id="newTitle" type="text" />
+        </div>
+        <div class="field" style="max-width:160px">
+          <label>Severitate</label>
+          <select id="newSeverity">
+            <option value="LOW">LOW</option>
+            <option value="MEDIUM">MEDIUM</option>
+            <option value="HIGH">HIGH</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Descriere</label>
+        <textarea id="newDescription"></textarea>
+      </div>
+      <button id="createBtn">Creeaza</button>
+      <div id="createMsg" class="msg hidden"></div>
+    </section>
+
+    <section id="ticketsListCard" class="card hidden">
+      <div class="toolbar">
+        <h2 style="margin:0; flex:1">Tichete</h2>
+        <button id="refreshBtn" class="ghost">Refresh</button>
+      </div>
+      <div id="ticketsList"></div>
+    </section>
+  </main>
+
+  <script type="module" src="/static/js/main.js"></script>
+</body>
+</html>

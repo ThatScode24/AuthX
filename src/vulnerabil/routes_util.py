@@ -48,7 +48,7 @@ def login(body: LoginReq, request: Request):
     tok = create_weak_token(user["id"], user["email"], user["role"])
 
     conn.execute(
-        """INSERT INTO sessions (user_id, token, expires_at)
+        """INSERT INTO user_sessions (user_id, session_token, expires_at)
            VALUES (?, ?, datetime('now', '+100 years'))""",
         (user["id"], tok)
     )
@@ -63,7 +63,7 @@ def logout(request: Request):
     return { "message": ' Logged out'}
 
 
-@router.post("/register", reponse_model=ApiResp) # nu verificam complexitatea paroleisi stocam parola ca md fara salt
+@router.post("/register", response_model=ApiResp) # nu verificam complexitatea paroleisi stocam parola ca md fara salt
 def register(body: RegisterReq):
     conn = get_connection("data.db")
 
@@ -99,7 +99,7 @@ def parola_uitata(body: ForgotPasswordReq):
     # facem token sa expire in 30 de zile, ceea ce e mult prea mult + trimitem direct tokenul in raspuns, trebia pe mail in mod normal
 
     conn.execute(
-        """INSERT INTO password_reset_tokens (user_id, token, expires_at)
+        """INSERT INTO password_reset_tokens (user_id, reset_token, expires_at)
            VALUES (?, ?, datetime('now', '+30 days'))""",
         (user["id"], reset_token)
     )
@@ -114,8 +114,8 @@ def reset_password(body: PasswordResetReq):
 
     reset = conn.execute(
         """SELECT * FROM password_reset_tokens
-           WHERE token = ? AND expires_at > datetime('now')""",
-        (body.token,)
+           WHERE reset_token = ? AND expires_at > datetime('now')""",
+        (body.reset_token,)
     ).fetchone()
 
     if not reset:
