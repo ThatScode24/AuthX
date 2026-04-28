@@ -128,7 +128,7 @@ def reset_password(body: PasswordResetReq):
         "UPDATE users SET password_hash = ? WHERE id = ?",
         (hash_nou, reset["user_id"])
     )
-    # nu marcam in niciun fel tokenul ca folisit 
+    # nu marcam in niciun fel tokenul ca folisit
 
     conn.commit()
     conn.close()
