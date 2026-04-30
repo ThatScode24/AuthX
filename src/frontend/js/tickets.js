@@ -1,6 +1,10 @@
 import { get, post } from "./api.js";
 import { $, showMsg, hideMsg, escapeHtml } from "./ui.js";
 
+// in v2 frontendul reactiveaza escapeHtml; in v1 lasa raw pentru demo XSS
+const safe = (v) =>
+  window.__APP_VERSION__ === "v2" ? escapeHtml(v ?? "") : String(v ?? "");
+
 function renderTicket(t) {
   const sev = (t.severity || "LOW").toUpperCase();
   const owner = t.created_by ?? t.owner_id ?? "?";
@@ -9,12 +13,12 @@ function renderTicket(t) {
   div.innerHTML = `
     <div class="ticket-header">
       <div class="ticket-title">
-        #${t.id ?? "?"} ${t.title || ""}
+        #${t.id ?? "?"} ${safe(t.title)}
         <span class="badge sev-${sev}">${sev}</span>
       </div>
-      <div class="ticket-meta">${t.status || ""} - owner ${owner}</div>
+      <div class="ticket-meta">${safe(t.status)} - owner ${owner}</div>
     </div>
-    <div class="ticket-desc">${t.description || ""}</div>
+    <div class="ticket-desc">${safe(t.description)}</div>
   `;
   return div;
 }

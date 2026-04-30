@@ -15,14 +15,26 @@ function refreshAuthUI() {
 
   if (logged) {
     const payload = decodeJwt(tok);
+    const ver = window.__APP_VERSION__ || "?";
     $("userInfo").textContent = payload
-      ? `${payload.email || ""} (${payload.role || "?"})`
-      : "logat";
+      ? `${payload.email || ""} (${payload.role || "?"}) - ${ver}`
+      : `logat - ${ver}`;
     loadTickets();
   }
 }
 
-bindTabs();
-initAuth(refreshAuthUI, refreshAuthUI);
-initTickets();
-refreshAuthUI();
+async function bootstrap() {
+  try {
+    const r = await fetch("/version");
+    const v = await r.json();
+    window.__APP_VERSION__ = v.version || "v1";
+  } catch {
+    window.__APP_VERSION__ = "v1";
+  }
+  bindTabs();
+  initAuth(refreshAuthUI, refreshAuthUI);
+  initTickets();
+  refreshAuthUI();
+}
+
+bootstrap();

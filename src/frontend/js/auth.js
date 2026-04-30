@@ -60,7 +60,7 @@ export function initAuth(onLogin, onLogout) {
   });
 
   $("logoutBtn").addEventListener("click", async () => {
-    try { await post("/auth/logout"); } catch { /* tokenul e oricum invalidat local */ }
+    try { await post("/auth/logout"); } catch {  }
     clearToken();
     onLogout?.();
   });

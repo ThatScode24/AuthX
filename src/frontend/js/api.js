@@ -30,7 +30,7 @@ export async function request(path, { method = "GET", body, headers = {} } = {})
   });
 
   let data = null;
-  try { data = await res.json(); } catch { /* response without body */ }
+  try { data = await res.json(); } catch {  }
 
   if (!res.ok) {
     const detail = (data && (data.detail || data.message)) || `HTTP ${res.status}`;

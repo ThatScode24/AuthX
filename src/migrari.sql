@@ -2,10 +2,11 @@ CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     email TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
-    role TEXT DEFAULT 'USER',
+    role TEXT DEFAULT 'ANALYST',
     registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     is_locked INTEGER DEFAULT 0,
-    login_attempts INTEGER DEFAULT 0
+    login_attempts INTEGER DEFAULT 0,
+    locked_until TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS tickets (
@@ -34,15 +35,17 @@ CREATE TABLE IF NOT EXISTS user_sessions (
 CREATE TABLE IF NOT EXISTS audit_logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER,
+    ticket_id INTEGER,
     event_type TEXT NOT NULL,
     category TEXT,
     target_id TEXT,
     occurred_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     ip_address TEXT,
     user_agent TEXT,
-    outcome TEXT DEFAULT 'SUCCESS',  
+    outcome TEXT DEFAULT 'SUCCESS',
     notes TEXT,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (ticket_id) REFERENCES tickets(id)
 );
 
 CREATE TABLE IF NOT EXISTS password_reset_tokens (
