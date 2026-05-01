@@ -39,6 +39,10 @@ def index():
     return FileResponse(FRONTEND_DIR / "index.html")
 
 
+@app.get("/version")
+def version():
+    return {"version": "v2", "label": "securizat"}
+
 
 app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
 

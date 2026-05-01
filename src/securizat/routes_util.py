@@ -3,7 +3,7 @@ import os
 import secrets
 from datetime import datetime, timedelta
 
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request, Response, HTTPException
 from jose import jwt
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError, InvalidHash
@@ -122,7 +122,7 @@ def register(request: Request, body: RegisterReq):
 
 @router.post("/login", response_model=AuthTokenResponse)
 @limiter.limit("10/minute")
-def login(request: Request, body: LoginReq):
+def login(request: Request, response: Response, body: LoginReq):
     ip, ua = request_meta(request)
     conn = get_connection(DB_PATH)
     user = conn.execute("SELECT * FROM users WHERE email=?", (body.email,)).fetchone()
@@ -199,11 +199,20 @@ def login(request: Request, body: LoginReq):
 
     log_event(DB_PATH, "LOGIN_SUCCESS", user_id=user["id"], category="AUTH",
               ip_address=ip, user_agent=ua)
+    response.set_cookie(
+        key="session",
+        value=tok,
+        max_age=TOKEN_TTL_MINUTES * 60,
+        httponly=True,
+        secure=True,
+        samesite="strict",
+        path="/",
+    )
     return {"access_token": tok, "token_type": "bearer"}
 
 
 @router.post("/logout", response_model=ApiResp)
-def logout(request: Request):
+def logout(request: Request, response: Response):
     ip, ua = request_meta(request)
     auth = request.headers.get("Authorization") or ""
     token = auth.split(" ", 1)[1] if auth.startswith("Bearer ") else None
@@ -225,6 +234,7 @@ def logout(request: Request):
 
     log_event(DB_PATH, "LOGOUT", user_id=user_id, category="AUTH",
               ip_address=ip, user_agent=ua)
+    response.delete_cookie(key="session", path="/")
     return {"message": "Logged out"}
 
 
